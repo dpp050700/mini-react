@@ -1,33 +1,6 @@
 import React from './mini-react/react'
 import ReactDOM from './mini-react/react-dom'
 
-class Result extends React.Component {
-  componentWillReceiveProps() {
-    console.log('Result componentWillReceiveProps')
-  }
-
-  shouldComponentUpdate() {
-    console.log('Result shouldComponentUpdate')
-    return true
-  }
-
-  componentWillUpdate() {
-    console.log('Result componentWillUpdate')
-  }
-
-  componentWillUnmount() {
-    console.log('Result componentWillUnmount')
-  }
-
-  componentDidUpdate() {
-    console.log('Result componentDidUpdate')
-  }
-  render() {
-    console.log('Result render')
-    return <div>总计：{this.props.sum}</div>
-  }
-}
-
 class Counter extends React.Component {
   static defaultProps = {
     name: 'zh_san'
@@ -52,13 +25,16 @@ class Counter extends React.Component {
     return (
       <div>
         <p>{this.state.number}</p>
-        {this.state.number === 4 ? null : <Result sum={this.state.number} />}
         <button onClick={this.handleClick}>+</button>
       </div>
     )
   }
   componentDidMount() {
     console.log('4 Counter componentDidMount')
+  }
+
+  componentWillReceiveProps() {
+    console.log('Counter componentWillReceiveProps')
   }
 
   shouldComponentUpdate() {
