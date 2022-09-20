@@ -28,6 +28,7 @@ function updateProps(dom, oldProps = {}, newProps) {
 
 function reconcileChildren(children, parentDOM) {
   for (let i = 0; i < children.length; i++) {
+    children[i].mountIndex = i
     mount(children[i], parentDOM)
   }
 }
@@ -49,6 +50,7 @@ function createDOM(vDom) {
     if (props) {
       updateProps(dom, {}, props)
       if (typeof props.children === 'object' && props.children.type) {
+        props.children.mountIndex = 0
         mount(props.children, dom)
       } else if (Array.isArray(props.children)) {
         reconcileChildren(props.children, dom)
@@ -166,11 +168,36 @@ function updateChildren(parentDOM, oldVChildren, newVChildren) {
   oldVChildren = Array.isArray(oldVChildren) ? oldVChildren : [oldVChildren]
   newVChildren = Array.isArray(newVChildren) ? newVChildren : [newVChildren]
 
-  let max = Math.max(oldVChildren.length, newVChildren.length)
-  for (let i = 0; i < max; i++) {
-    let nexVDom = oldVChildren.find((item, index) => index > i && item && findDOM(item))
-    compareTwoVDom(parentDOM, oldVChildren[i], newVChildren[i], nexVDom?.dom)
-  }
+  let lastPlacedIndex = -1
+
+  let keyedOldMap = {}
+
+  oldVChildren.forEach((oldVChild, index) => {
+    let oldKey = oldVChild.key ? oldVChild.key : index
+    keyedOldMap[oldKey] = oldVChild
+  })
+
+  let patch = []
+
+  newVChildren.forEach((newVChild, index) => {
+    newVChild.mountIndex = index
+    let newKey = newVChild.key ? newVChild.key : index
+    let oldVChild = keyedOldMap[newKey]
+    if (oldVChild) {
+      // 如果有 说明可以复用老节点
+      if (oldVChild.mountIndex < lastPlacedIndex) {
+        patch.push({
+          type: 'MOVE'
+        })
+      }
+    }
+  })
+
+  // let max = Math.max(oldVChildren.length, newVChildren.length)
+  // for (let i = 0; i < max; i++) {
+  //   let nexVDom = oldVChildren.find((item, index) => index > i && item && findDOM(item))
+  //   compareTwoVDom(parentDOM, oldVChildren[i], newVChildren[i], nexVDom?.dom)
+  // }
 }
 
 const ReactDOM = {

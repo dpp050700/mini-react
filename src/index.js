@@ -1,77 +1,43 @@
 import React from './mini-react/react'
 import ReactDOM from './mini-react/react-dom'
 
-class Result extends React.Component {
-  componentWillReceiveProps() {
-    console.log('Result componentWillReceiveProps')
-  }
-
-  shouldComponentUpdate() {
-    console.log('Result shouldComponentUpdate')
-    return true
-  }
-
-  componentWillUpdate() {
-    console.log('Result componentWillUpdate')
-  }
-
-  componentWillUnmount() {
-    console.log('Result componentWillUnmount')
-  }
-
-  componentDidUpdate() {
-    console.log('Result componentDidUpdate')
-  }
-  render() {
-    console.log('Result render')
-    return <div>总计：{this.props.sum}</div>
-  }
-}
-
 class Counter extends React.Component {
-  static defaultProps = {
-    name: 'zh_san'
-  }
   constructor(props) {
     super(props)
     this.state = {
-      number: 0
+      list: [
+        { name: '张三', key: 'zhangsan ' },
+        { name: '李四', key: 'lisi ' },
+        { name: '王二', key: 'wanger ' },
+        { name: '麻子', key: 'mazi ' }
+      ]
     }
-    console.log('1 Counter constructor')
   }
 
   handleClick = () => {
-    this.setState({ number: this.state.number + 1 })
-  }
-  componentWillMount() {
-    console.log('2 Counter componentWillMount')
+    this.setState({
+      list: [
+        { name: '张三', key: 'zhangsan ' },
+        { name: '赵大', key: 'zhaoda ' },
+        { name: '王二', key: 'wanger ' },
+        { name: '李四', key: 'lisi ' },
+        { name: '团子', key: 'tuanzi ' }
+      ]
+    })
   }
 
   render() {
-    console.log('3 Counter render')
     return (
       <div>
-        <p>{this.state.number}</p>
-        {this.state.number === 4 ? null : <Result sum={this.state.number} />}
+        <div>
+          {this.state.list.map((item) => {
+            return <div key={item.key}>姓名：{item.name}</div>
+          })}
+        </div>
+
         <button onClick={this.handleClick}>+</button>
       </div>
     )
-  }
-  componentDidMount() {
-    console.log('4 Counter componentDidMount')
-  }
-
-  shouldComponentUpdate() {
-    console.log('Counter shouldComponentUpdate')
-    return true
-  }
-
-  componentWillUpdate() {
-    console.log('Counter componentWillUpdate')
-  }
-
-  componentDidUpdate() {
-    console.log('Counter componentDidUpdate')
   }
 }
 
