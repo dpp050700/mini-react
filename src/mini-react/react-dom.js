@@ -70,10 +70,6 @@ function render(vDom, container) {
 }
 
 function mount(vDom, container) {
-  // if (!vDom) {
-  //   container.remove()
-  //   return
-  // }
   let newDOM = createDOM(vDom)
   container.append(newDOM)
 }
@@ -237,6 +233,7 @@ export function compareTwoVDom(parentDOM, oldVDom, newVDom, nextDOM) {
   } else {
     updateElement(oldVDom, newVDom)
   }
+  // 暴力更新
   // let oldDom = findDOM(oldVDom)
   // let newDOM = createDOM(newVDom)
   // parentDOM.replaceChild(newDOM, oldDom)
