@@ -28,7 +28,7 @@ class Counter extends React.Component {
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <div>
           {this.state.list.map((item) => {
             return <div key={item.key}>姓名：{item.name}</div>
@@ -36,7 +36,7 @@ class Counter extends React.Component {
         </div>
 
         <button onClick={this.handleClick}>+</button>
-      </div>
+      </React.Fragment>
     )
   }
 }

@@ -1,6 +1,7 @@
-import { REACT_TEXT } from './utils'
+import { REACT_FRAGMENT, REACT_TEXT } from './utils'
 import { addEvent } from './event'
 import { REACT_FORWARD_REF } from './element'
+import { MOVE, DELETE, PLACEMENT } from './flags'
 
 function updateProps(dom, oldProps = {}, newProps) {
   for (let key in newProps) {
@@ -36,7 +37,9 @@ function reconcileChildren(children, parentDOM) {
 function createDOM(vDom) {
   let { type, props, ref } = vDom
   let dom
-  if (type && type.$$typeof === REACT_FORWARD_REF) {
+  if (type === REACT_FRAGMENT) {
+    dom = document.createDocumentFragment()
+  } else if (type && type.$$typeof === REACT_FORWARD_REF) {
     return mountForwardComponent(vDom)
   } else if (type === REACT_TEXT) {
     dom = document.createTextNode(props)
@@ -47,14 +50,14 @@ function createDOM(vDom) {
     return mountFunctionComponent(vDom)
   } else {
     dom = document.createElement(type)
-    if (props) {
-      updateProps(dom, {}, props)
-      if (typeof props.children === 'object' && props.children.type) {
-        props.children.mountIndex = 0
-        mount(props.children, dom)
-      } else if (Array.isArray(props.children)) {
-        reconcileChildren(props.children, dom)
-      }
+  }
+  if (props) {
+    updateProps(dom, {}, props)
+    if (typeof props.children === 'object' && props.children.type) {
+      props.children.mountIndex = 0
+      mount(props.children, dom)
+    } else if (Array.isArray(props.children)) {
+      reconcileChildren(props.children, dom)
     }
   }
   // 虚拟 Dom 上关联真实 dom
@@ -124,7 +127,10 @@ function unmountVDom(vDom) {
 }
 
 function updateElement(oldVDom, newVDom) {
-  if (oldVDom.type === REACT_TEXT) {
+  if (oldVDom.type === REACT_FRAGMENT) {
+    let currentDOM = (newVDom.dom = findDOM(oldVDom))
+    updateChildren(currentDOM, oldVDom.props.children, newVDom.props.children)
+  } else if (oldVDom.type === REACT_TEXT) {
     let currentDOM = (newVDom.dom = findDOM(oldVDom))
     if (oldVDom.props !== newVDom.props) {
       currentDOM.textContent = newVDom.props
@@ -180,11 +186,53 @@ function updateChildren(parentDOM, oldVChildren, newVChildren) {
     let newKey = newVChild.key ? newVChild.key : index
     let oldVChild = keyedOldMap[newKey]
     if (oldVChild) {
+      updateElement(oldVChild, newVChild)
       // 如果有 说明可以复用老节点
       if (oldVChild.mountIndex < lastPlacedIndex) {
         patch.push({
-          type: 'MOVE'
+          type: MOVE,
+          oldVChild,
+          newVChild,
+          mountIndex: index
         })
+      }
+      delete keyedOldMap[newKey]
+      lastPlacedIndex = Math.max(lastPlacedIndex, oldVChild.mountIndex)
+    } else {
+      patch.push({
+        type: PLACEMENT,
+        newVChild,
+        mountIndex: index
+      })
+    }
+  })
+
+  let moveVChild = patch.filter((action) => action.type === MOVE).map((action) => action.oldVChild)
+  Object.values(keyedOldMap)
+    .concat(moveVChild)
+    .forEach((oldVChild) => {
+      let currentDOM = findDOM(oldVChild)
+      currentDOM.remove()
+    })
+
+  patch.forEach((action) => {
+    let { type, oldVChild, newVChild, mountIndex } = action
+    let childNodes = parentDOM.childNodes // 删除元素后的真实节点
+    if (type === PLACEMENT) {
+      let newDOM = createDOM(newVChild)
+      let childNode = childNodes[mountIndex]
+      if (childNode) {
+        parentDOM.insertBefore(newDOM, childNode)
+      } else {
+        parentDOM.appendChild(newDOM)
+      }
+    } else if (type === MOVE) {
+      let oldDOM = findDOM(oldVChild)
+      let childNode = childNodes[mountIndex]
+      if (childNode) {
+        parentDOM.insertBefore(oldDOM, childNode)
+      } else {
+        parentDOM.appendChild(oldDOM)
       }
     }
   })

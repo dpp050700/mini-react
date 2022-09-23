@@ -1,5 +1,5 @@
 import { REACT_ELEMENT, REACT_FORWARD_REF } from './element'
-import { wrapToVDom } from './utils'
+import { REACT_FRAGMENT, wrapToVDom } from './utils'
 
 import { Component } from './Component'
 
@@ -42,6 +42,6 @@ function forwardRef(fn) {
   }
 }
 
-const React = { createElement, createRef, forwardRef, Component }
+const React = { createElement, createRef, forwardRef, Component, Fragment: REACT_FRAGMENT }
 
 export default React
