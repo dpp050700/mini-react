@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "vite serve demos/v1 --config demos/vite.config.js --force"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,10 @@
   "bugs": {
     "url": "https://github.com/dpp050700/mini-react/issues"
   },
-  "homepage": "https://github.com/dpp050700/mini-react#readme"
+  "homepage": "https://github.com/dpp050700/mini-react#readme",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "^4.8.4",
+    "vite": "^3.2.3"
+  }
 }
