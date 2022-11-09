@@ -9,11 +9,11 @@ export default defineConfig({
     alias: [
       {
         find: 'react',
-        replacement: path.resolve(__dirname, '../packages/react/index.ts')
+        replacement: path.resolve(__dirname, '../packages/react')
       },
       {
         find: 'react-dom',
-        replacement: path.resolve(__dirname, '../packages/react-dom/index.ts')
+        replacement: path.resolve(__dirname, '../packages/react-dom')
       }
     ]
   }

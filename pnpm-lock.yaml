@@ -12,6 +12,18 @@ importers:
       typescript: 4.8.4
       vite: 3.2.3
 
+  packages/react:
+    specifiers:
+      shared: workspace:*
+    dependencies:
+      shared: link:../shared
+
+  packages/react-dom:
+    specifiers: {}
+
+  packages/shared:
+    specifiers: {}
+
 packages:
 
   /@ampproject/remapping/2.2.0:
