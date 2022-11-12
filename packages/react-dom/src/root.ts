@@ -1,5 +1,7 @@
-export function createRoot(container) {
+export function createRoot(container: any) {
   return {
-    render() {}
+    render() {
+      console.log(container)
+    }
   }
 }

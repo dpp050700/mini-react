@@ -1,3 +1,3 @@
-import { jsx } from './src/jsx'
+import { jsx } from './src/ReactJSXElement'
 
 export const createElement = jsx
