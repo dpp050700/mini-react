@@ -1,3 +1,5 @@
+export type Container = Element | Document
+
 export type ElementType = any
 
 export type Key = string | null
