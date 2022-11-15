@@ -8,8 +8,6 @@ function App() {
 
 const element = <div>222</div>
 
-console.log(element)
-
 // ReactDOM.render(<div>222</div>, document.getElementById('root'))
 
 // import ReactDOM from 'react-dom/client'
