@@ -28,8 +28,10 @@ importers:
 
   packages/react-reconciler:
     specifiers:
+      scheduler: workspace:*
       shared: workspace:*
     dependencies:
+      scheduler: link:../scheduler
       shared: link:../shared
 
   packages/shared:

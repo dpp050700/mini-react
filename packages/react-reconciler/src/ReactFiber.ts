@@ -1,3 +1,4 @@
+import { Key } from './../../shared/ReactTypes'
 import { HostRoot } from './ReactWorkTags'
 import { Key, Props } from 'shared/ReactTypes'
 import { Flags, NoFlags } from './ReactFiberFlags'
@@ -41,4 +42,33 @@ export function createFiber(tag: any, pendingProps: Props, key: Key) {
 
 export function createHostRootFiber() {
   return createFiber(HostRoot, null, null)
+}
+
+/**
+ * 基于老的 fiber 和 新的属性创建新的 fiber
+ * @param current
+ * @param pendingProps
+ */
+export function createWorkInProgress(current: any, pendingProps: any) {
+  let workInProgress = current.alternate
+  if (workInProgress) {
+    workInProgress = createFiber(current.tag, pendingProps, current.Key)
+    workInProgress.type = current.type
+    workInProgress.stateNode = current.stateNode
+    workInProgress.alternate = current
+    current.alternate = workInProgress
+  } else {
+    workInProgress.pendingProps = pendingProps
+    workInProgress.type = current.type
+    workInProgress.flags = NoFlags
+    workInProgress.subtreeFlags = NoFlags
+  }
+  workInProgress.child = current.child
+  workInProgress.memoizedProps = current.memoizedProps
+  workInProgress.memoizedState = current.memoizedState
+  workInProgress.updateQueue = current.updateQueue
+  workInProgress.sibling = current.sibling
+  workInProgress.index = current.index
+
+  return workInProgress
 }

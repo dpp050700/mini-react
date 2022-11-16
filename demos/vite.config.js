@@ -14,6 +14,10 @@ export default defineConfig({
       {
         find: 'react-dom',
         replacement: path.resolve(__dirname, '../packages/react-dom')
+      },
+      {
+        find: 'scheduler',
+        replacement: path.resolve(__dirname, '../packages/scheduler')
       }
     ]
   }
