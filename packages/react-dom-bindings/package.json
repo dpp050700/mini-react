@@ -1,5 +1,5 @@
 {
-  "name": "react-reconciler",
+  "name": "react-dom-bindings",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -8,10 +8,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "shared": "workspace:*",
-    "scheduler": "workspace:*",
-    "react-dom-bindings": "workspace:*"
-  }
+  "license": "ISC"
 }

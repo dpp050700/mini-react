@@ -6,7 +6,13 @@ function App() {
   return <div>11</div>
 }
 
-const element = <div>222</div>
+const element = (
+  <h1>
+    hello <span style={{ color: 'red' }}>world</span>
+  </h1>
+)
+
+console.log(element)
 
 // ReactDOM.render(<div>222</div>, document.getElementById('root'))
 

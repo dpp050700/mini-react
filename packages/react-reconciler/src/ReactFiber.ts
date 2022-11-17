@@ -1,5 +1,4 @@
-import { Key } from './../../shared/ReactTypes'
-import { HostRoot } from './ReactWorkTags'
+import { HostComponent, HostRoot, HostText, IndeterminateComponent } from './ReactWorkTags'
 import { Key, Props } from 'shared/ReactTypes'
 import { Flags, NoFlags } from './ReactFiberFlags'
 
@@ -29,6 +28,7 @@ export class FiberNode {
   subtreeFlags: Flags = NoFlags
   // 轮替
   alternate: any = null
+  index: number = 0
   constructor(tag: any, pendingProps: Props, key: Key) {
     this.tag = tag
     this.key = key
@@ -51,7 +51,7 @@ export function createHostRootFiber() {
  */
 export function createWorkInProgress(current: any, pendingProps: any) {
   let workInProgress = current.alternate
-  if (workInProgress) {
+  if (workInProgress === null) {
     workInProgress = createFiber(current.tag, pendingProps, current.Key)
     workInProgress.type = current.type
     workInProgress.stateNode = current.stateNode
@@ -71,4 +71,24 @@ export function createWorkInProgress(current: any, pendingProps: any) {
   workInProgress.index = current.index
 
   return workInProgress
+}
+
+export function createFiberFromElement(element: any) {
+  const { type, key, props: pendingProps } = element
+  return createFiberFromTypeAndProps(type, key, pendingProps)
+}
+
+function createFiberFromTypeAndProps(type: any, key: any, pendingProps: any) {
+  let tag = IndeterminateComponent
+  if (typeof type === 'string') {
+    tag = HostComponent
+  }
+  const fiber = createFiber(tag, pendingProps, key)
+  fiber.type = type
+  return fiber
+}
+
+export function createFiberFromText(content: any): any {
+  const fiber = createFiber(HostText, content, null)
+  return fiber
 }
