@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "demo": "vite serve demos/v1 --config demos/vite.config.js --force"
+    "demo:v1": "vite serve demos/v1 --config demos/vite.config.ts --force"
   },
   "repository": {
     "type": "git",
@@ -18,7 +17,13 @@
     "url": "https://github.com/dpp050700/mini-react/issues"
   },
   "homepage": "https://github.com/dpp050700/mini-react#readme",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "^4.8.4",
     "vite": "^3.2.3"
