@@ -5,5 +5,5 @@ ReactDOMRoot.prototype.render = function () {
 }
 
 export function createRoot() {
-  return new ReactDOMRoot()
+  return new (ReactDOMRoot as any)()
 }
