@@ -4,6 +4,6 @@ import { createRoot } from 'react-dom/client'
 
 const root = createRoot(document.getElementById('root'))
 
-const element = <div>hello world</div>
+const element = <div id="container">hello world</div>
 
 root.render(element)
