@@ -6,4 +6,6 @@ const root = createRoot(document.getElementById('root'))
 
 const element = <div id="container">hello world</div>
 
+console.log(element)
+
 root.render(element)

@@ -1,3 +1,1 @@
-export function jsxDEV(type, config) {
-  console.log(type, config)
-}
+export { jsxDEV } from './src/ReactJSXElement'
