@@ -115,7 +115,6 @@ function commitPlacement(finishedWork: FiberNode) {
     default:
       break
   }
-  // parentFiber.stateNode.appendChild(finishedWork.stateNode)
 }
 
 export function commitMutationEffectsOnFiber(
@@ -126,7 +125,7 @@ export function commitMutationEffectsOnFiber(
     case HostRoot:
     case HostComponent:
     case HostText:
-      // 先便利他么的子节点，处理它们的子节点上的副作用
+      // 先遍历它们的子节点，处理它们的子节点上的副作用
       recursivelyTraverseMutationEffects(root, finishedWork)
       // 处理自己身上的副作用
       commitReconciliationEffects(finishedWork)
