@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "shared": "workspace:*",
+    "react-reconciler": "workspace:*"
+  }
 }

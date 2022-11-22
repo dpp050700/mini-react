@@ -16,4 +16,6 @@ export interface ReactElement {
 export type Props = {
   [key: string]: any
   children?: ReactElement
-}
+} & string
+
+export type Container = Element

@@ -20,7 +20,7 @@ importers:
       prettier: ^2.7.1
       react: ^18.2.0
       react-dom: ^18.2.0
-      typescript: 4.8.2
+      typescript: ^4.8.2
       vite: ^3.2.3
       vite-plugin-eslint: ^1.8.1
     dependencies:
@@ -52,6 +52,27 @@ importers:
       shared: link:../shared
 
   packages/react-dom:
+    specifiers:
+      react-reconciler: workspace:*
+      shared: workspace:*
+    dependencies:
+      react-reconciler: link:../react-reconciler
+      shared: link:../shared
+
+  packages/react-dom-bindings:
+    specifiers: {}
+
+  packages/react-reconciler:
+    specifiers:
+      react-dom-bindings: workspace:*
+      scheduler: workspace:*
+      shared: workspace:*
+    dependencies:
+      react-dom-bindings: link:../react-dom-bindings
+      scheduler: link:../scheduler
+      shared: link:../shared
+
+  packages/scheduler:
     specifiers: {}
 
   packages/shared:

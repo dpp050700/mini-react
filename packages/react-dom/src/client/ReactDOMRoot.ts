@@ -1,9 +1,20 @@
-function ReactDOMRoot() {}
+import { Container, ReactElement } from 'shared/ReactTypes'
+import {
+  createContainer,
+  updateContainer
+} from 'react-reconciler/src/ReactFiberReconciler'
+import { FiberRootNode } from 'react-reconciler/src/ReactFiberRoot'
 
-ReactDOMRoot.prototype.render = function () {
-  console.log('render')
+function ReactDOMRoot(internalRoot: FiberRootNode) {
+  this._internalRoot = internalRoot
 }
 
-export function createRoot() {
-  return new (ReactDOMRoot as any)()
+ReactDOMRoot.prototype.render = function (element: ReactElement) {
+  const root = this._internalRoot
+  updateContainer(element, root)
+}
+
+export function createRoot(container: Container) {
+  const root = createContainer(container)
+  return new (ReactDOMRoot as any)(root)
 }
