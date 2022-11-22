@@ -26,6 +26,6 @@ export function appendChild(parentInstance: any, child: any) {
   parentInstance.appendChild(child)
 }
 
-export function insertBefore(parentInstance: any, befoe: any, child: any) {
-  parentInstance.insertBefore(child)
+export function insertBefore(parentInstance: any, before: any, child: any) {
+  parentInstance.insertBefore(child, before)
 }

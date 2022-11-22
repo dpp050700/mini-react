@@ -18,7 +18,7 @@ function commitReconciliationEffects(finishedWork: any) {
   if (flags & Placement) {
     // 进行插入操作。把fiber 对应的真实DOM节点添加到真实的 dom 节点上
     commitPlacement(finishedWork)
-    finishedWork.flags & ~Placement
+    finishedWork.flags &= ~Placement
   }
 }
 
