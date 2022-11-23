@@ -1,5 +1,5 @@
 import { MutationMask, Placement } from './ReactFiberFlags'
-import { HostRoot, HostComponent, HostText } from './ReactWorkTags'
+import { HostRoot, HostComponent, HostText, FunctionComponent } from './ReactWorkTags'
 import { appendChild, insertBefore } from 'react-dom-bindings/src/client/ReactDOMHostConfig'
 
 function recursivelyTraverseMutationEffects(root: any, parentFiber: any) {
@@ -49,7 +49,7 @@ function insertOrAppendPlacementNode(node: any, before: any, parent: any) {
   } else {
     const { child } = node
     if (child !== null) {
-      insertOrAppendPlacementNode(node, before, parent)
+      insertOrAppendPlacementNode(child, before, parent)
       let { sibling } = child
       while (sibling !== null) {
         insertOrAppendPlacementNode(sibling, before, parent)
@@ -107,6 +107,7 @@ function commitPlacement(finishedWork: any) {
 
 export function commitMutationEffectsOnFiber(finishedWork: any, root: any) {
   switch (finishedWork.tag) {
+    case FunctionComponent:
     case HostRoot:
     case HostComponent:
     case HostText:

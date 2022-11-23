@@ -3,14 +3,14 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 function App() {
-  return <div>11</div>
+  return (
+    <h1>
+      hello <span style={{ color: 'red' }}>world</span>
+    </h1>
+  )
 }
 
-const element = (
-  <h1>
-    hello <span style={{ color: 'red' }}>world</span>
-  </h1>
-)
+const element = <App />
 
 console.log(element)
 

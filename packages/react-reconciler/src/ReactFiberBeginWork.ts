@@ -1,4 +1,4 @@
-import { HostRoot, HostComponent, HostText } from './ReactWorkTags'
+import { HostRoot, HostComponent, HostText, IndeterminateComponent, FunctionComponent } from './ReactWorkTags'
 import { processUpdateQueue } from './ReactFiberClassUpdateQueue'
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber'
 import { shouldSetTextContent } from 'react-dom-bindings/src/client/ReactDOMHostConfig'
@@ -52,6 +52,14 @@ function updateHostText(current: any, workInProgress: any): null {
   return null
 }
 
+function mountIndeterminateComponent(current: any, workInProgress: any, Component: any) {
+  const props = workInProgress.pendingProps
+  const value = Component(props)
+  workInProgress.tag = FunctionComponent
+  reconcileChildren(null, workInProgress, value)
+  return workInProgress.child
+}
+
 /**
  * 目标是根据新虚拟 dom 构建新的 fiber 子链表 child .sibling
  * @param current 老 fiber
@@ -61,15 +69,14 @@ function beginWork(current: any, workInProgress: any) {
   switch (workInProgress.tag) {
     case HostRoot:
       return updateHostRoot(current, workInProgress)
-      break
+    case IndeterminateComponent:
+      return mountIndeterminateComponent(current, workInProgress, workInProgress.type)
     case HostComponent:
       return updateHostComponent(current, workInProgress)
-      break
     case HostText:
       return updateHostText(current, workInProgress)
-      break
     default:
-      break
+      return null
   }
 }
 
