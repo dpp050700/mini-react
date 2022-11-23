@@ -62,7 +62,7 @@ function insertOrAppendPlacementNode(
   } else {
     const { child } = node
     if (child !== null) {
-      insertOrAppendPlacementNode(node, before, parent)
+      insertOrAppendPlacementNode(child, before, parent)
       let { sibling } = child
       while (sibling !== null) {
         insertOrAppendPlacementNode(sibling, before, parent)
