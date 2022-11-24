@@ -2,6 +2,7 @@ import { HostRoot, HostComponent, HostText, IndeterminateComponent, FunctionComp
 import { processUpdateQueue } from './ReactFiberClassUpdateQueue'
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber'
 import { shouldSetTextContent } from 'react-dom-bindings/src/client/ReactDOMHostConfig'
+import { renderWithHooks } from './ReactFiberHooks'
 
 /**
  * 根据新的虚拟 DOM 生成新的fiber 链表
@@ -54,7 +55,8 @@ function updateHostText(current: any, workInProgress: any): null {
 
 function mountIndeterminateComponent(current: any, workInProgress: any, Component: any) {
   const props = workInProgress.pendingProps
-  const value = Component(props)
+  // const value = Component(props)
+  const value = renderWithHooks(current, workInProgress, Component, props)
   workInProgress.tag = FunctionComponent
   reconcileChildren(null, workInProgress, value)
   return workInProgress.child

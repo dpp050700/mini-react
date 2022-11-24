@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root">
+      root
+      <div id="parent">
+        parent
+        <div id="child">child</div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let root = document.getElementById('root')
+    let parent = document.getElementById('parent')
+    let child = document.getElementById('child')
+
+    // e 是目标对象，具体点击的哪个元素
+    root.addEventListener('click', (e) => dispatchEvent(e, true), true)
+    root.addEventListener('click', (e) => dispatchEvent(e, false), false)
+
+    // child.addEventListener(
+    //   'click',
+    //   function (e) {
+    //     console.log('child', e.target)
+    //   },
+    //   true
+    // )
+
+    // parent.addEventListener(
+    //   'click',
+    //   function (e) {
+    //     console.log('parent', e.target)
+    //   },
+    //   true
+    // )
+
+    function dispatchEvent(event, isCapture) {
+      let paths = []
+      let currentTarget = event.target
+
+      while (currentTarget) {
+        paths.push(currentTarget)
+        currentTarget = currentTarget.parentNode
+      }
+      if (isCapture) {
+        for (let i = paths.length - 1; i >= 0; i--) {
+          let handler = paths[i].onClickCapture
+          handler && handler()
+        }
+      } else {
+        for (let i = 0; i < paths.length; i++) {
+          let handler = paths[i].onClick
+          handler && handler()
+        }
+      }
+    }
+  </script>
+</html>
