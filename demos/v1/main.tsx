@@ -1,14 +1,18 @@
-import React from 'react'
+import React, {useReducer} from 'react'
 
 import { createRoot } from 'react-dom/client'
 
+
+function counter(state, action) {
+  if(action.type === 'add') return state + 1
+  return  state
+}
+
 function App() {
+
+  const [number, setNumber] = useReducer(counter, 0)
   return (
-    <h1 onClick={() => console.log('parent Bubble')} onClickCapture={(e) => console.log(e.currentTarget)}>
-      <span onClick={() => console.log('child Bubble')} onClickCapture={(e) => console.log(e.currentTarget)}>
-        world
-      </span>
-    </h1>
+    <button onClick={() => setNumber({type: 'add'})}>{ number }</button>
   )
 }
 

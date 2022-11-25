@@ -10,4 +10,5 @@
     猜测：开发环境的时候 @vitejs/plugin-react  自动将 jsx 转为 jsxDEV 函数，而不是 createElement
  */
 
-export { jsxDEV } from './src/ReactJSXElement'
+export { jsxDEV } from './src/jsx/ReactJSXElement'
+

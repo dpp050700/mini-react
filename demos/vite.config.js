@@ -22,7 +22,11 @@ export default defineConfig({
       {
         find: 'react-dom-bindings',
         replacement: path.resolve(__dirname, '../packages/react-dom-bindings')
-      }
+      },
+      {
+        find: 'shared',
+        replacement: path.resolve(__dirname, '../packages/shared')
+      },
     ]
   }
 })
