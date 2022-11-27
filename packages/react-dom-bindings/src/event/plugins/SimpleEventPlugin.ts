@@ -1,7 +1,7 @@
 import { registerSimpleEvents, topLevelEventsToReactNames } from '../DOMEventProperties'
 import { accumulateSinglePhaseListeners } from '../DOMPluginEventSystem'
 import { IS_CAPTURE_PHASE } from '../EventSystemFlags'
-import {SyntheticMouseEvent} from '../SyntheticEvent'
+import { SyntheticMouseEvent } from '../SyntheticEvent'
 
 function extractEvents(
   dispatchQueue: any,
@@ -16,10 +16,10 @@ function extractEvents(
   const reactName = topLevelEventsToReactNames.get(domEventName)
   const listeners = accumulateSinglePhaseListeners(targetInst, reactName, nativeEvent.type, isCapturePhase)
 
-  let SyntheticEventCtor // 合成事件的构造函数
+  let SyntheticEventCtor: any // 合成事件的构造函数
 
   switch (domEventName) {
-    case  'click':
+    case 'click':
       SyntheticEventCtor = SyntheticMouseEvent
       break
     default:

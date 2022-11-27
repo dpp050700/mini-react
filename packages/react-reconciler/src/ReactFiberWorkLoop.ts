@@ -4,14 +4,19 @@ import { beginWork } from './ReactFiberBeginWork'
 import { completeWork } from './ReactFiberCompleteWork'
 import { NoFlags, MutationMask } from './ReactFiberFlags'
 import { commitMutationEffectsOnFiber } from './ReactFiberCommitWork'
+import {finishQueueingConcurrentUpdates} from './ReactFiberConcurrentUpdates'
 
 let workInProgress: any = null
+
+let workInProgressRoot:any = null
 
 export function scheduleUpdateOnFiber(root: any) {
   ensureRootIsScheduled(root)
 }
 
 function ensureRootIsScheduled(root: any) {
+  if(workInProgressRoot) return
+  workInProgressRoot = root
   scheduleCallback(performConcurrentWorkOnRoot.bind(null, root))
 }
 
@@ -26,6 +31,7 @@ function performConcurrentWorkOnRoot(root: any) {
   const finishedWork = root.current.alternate
   root.finishedWork = finishedWork
   commitRoot(root)
+  workInProgressRoot = null
 }
 
 function commitRoot(root: any) {
@@ -41,7 +47,7 @@ function commitRoot(root: any) {
 
 function prepareFreshStack(root: any) {
   workInProgress = createWorkInProgress(root.current, null)
-  console.log(workInProgress)
+  finishQueueingConcurrentUpdates()
 }
 
 function renderRootSync(root: any) {

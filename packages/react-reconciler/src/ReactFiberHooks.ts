@@ -1,10 +1,12 @@
 import ReactSharedInternals from 'shared/ReactSharedInternals'
+import {scheduleUpdateOnFiber} from "./ReactFiberWorkLoop";
+import {enqueueConcurrentHookUpdate} from './ReactFiberConcurrentUpdates'
 
 const { ReactCurrentDispatcher } = ReactSharedInternals
 
-let currentlyRenderingFiber = null
+let currentlyRenderingFiber:any = null
 
-let workInProgressHook = null
+let workInProgressHook:any = null
 
 const HooksDispatcherOnMount = {
   useReducer: mountReducer
@@ -13,7 +15,7 @@ const HooksDispatcherOnMount = {
 function mountReducer(reducer: any, initialArg: any){
   const hook = mountWorkInProgressHook()
   hook.memoizedState = initialArg
-  const queue = {
+  const queue:any = {
     pending: null,
     dispatch: null
   }
@@ -28,15 +30,21 @@ function mountReducer(reducer: any, initialArg: any){
  * @param queue
  * @param action
  */
-function dispatchReducerAction(fiber, queue, action){
-  console.log(fiber, queue, action)
+function dispatchReducerAction(fiber:any, queue:any, action:any){
+  const update:any = {
+    action,
+    next: null
+  }
+  const root = enqueueConcurrentHookUpdate(fiber, queue, update)
+  scheduleUpdateOnFiber(root)
+  // console.log(fiber, queue, action)
 }
 
 /**
  * 挂载构建中的 hook
  */
 function mountWorkInProgressHook() {
-  const hook = {
+  const hook:any = {
     memoizedState:null,
     queue: null, // 存放本 hook 的更新队列
     next: null // 指向下一个 hook
