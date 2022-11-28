@@ -58,7 +58,13 @@ function mountIndeterminateComponent(current: any, workInProgress: any, Componen
   // const value = Component(props)
   const value = renderWithHooks(current, workInProgress, Component, props)
   workInProgress.tag = FunctionComponent
-  reconcileChildren(null, workInProgress, value)
+  reconcileChildren(current, workInProgress, value)
+  return workInProgress.child
+}
+
+function updateFunctionComponent(current: any, workInProgress: any, Component: any, nextProps: any){
+  const nextChildren = renderWithHooks(current, workInProgress, Component, nextProps)
+  reconcileChildren(current, workInProgress, nextChildren)
   return workInProgress.child
 }
 
@@ -71,6 +77,10 @@ function beginWork(current: any, workInProgress: any) {
   switch (workInProgress.tag) {
     case HostRoot:
       return updateHostRoot(current, workInProgress)
+    case FunctionComponent:
+      const Component = workInProgress.type
+      const nextProps = workInProgress.pendingProps
+      return updateFunctionComponent(current,workInProgress, Component, nextProps)
     case IndeterminateComponent:
       return mountIndeterminateComponent(current, workInProgress, workInProgress.type)
     case HostComponent:

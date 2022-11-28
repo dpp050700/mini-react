@@ -9,13 +9,19 @@ function counter(state, action) {
 }
 
 function App() {
-
   const [number, setNumber] = useReducer(counter, 0)
+  let attrs = {id: 'btn1'}
+  if(number === 1) {
+    delete  attrs.id
+    attrs.style = {color: 'red'}
+  }
   return (
-    <button onClick={() => setNumber({type: 'add'})}>{ number }</button>
+    <button {...attrs} onClick={() => setNumber({type: 'add'})}>{ number }</button>
   )
 }
 
 const element = <App />
+
+// const element = <div>111</div>
 
 createRoot(document.getElementById('root') as HTMLElement).render(element)

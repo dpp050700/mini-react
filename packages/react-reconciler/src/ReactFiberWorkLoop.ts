@@ -63,7 +63,6 @@ function workLoopSync() {
 }
 
 function performUnitOfWork(unitOfWork: any) {
-  // 获取新 fiber 对应的老 fiber
   const current = unitOfWork.alternate
   const next = beginWork(current, unitOfWork)
   unitOfWork.memoizedProps = unitOfWork.pendingProps

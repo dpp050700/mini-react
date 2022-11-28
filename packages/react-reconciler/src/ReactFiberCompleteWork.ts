@@ -1,11 +1,12 @@
-import { HostText, HostComponent, HostRoot } from './ReactWorkTags'
+import {HostText, HostComponent, HostRoot, FunctionComponent} from './ReactWorkTags'
 import {
   createTextInstance,
   createInstance,
   appendInitialChild,
-  finalizeInitialChildren
+  finalizeInitialChildren,
+  prepareUpdate
 } from 'react-dom-bindings/src/client/ReactDOMHostConfig'
-import { NoFlags } from './ReactFiberFlags'
+import {NoFlags, Update} from './ReactFiberFlags'
 
 /**
  * 把当前完成的 fiber 所有的子节点对应的真实 DOM 都挂载到自己父parent真实DOM节点上
@@ -37,6 +38,20 @@ function appendAllChildren(parent: any, workInProgress: any) {
   }
 }
 
+function markUpdate(workInProgress:any){
+  workInProgress.flags |= Update
+}
+
+function updateHostComponent(current: any, workInProgress:any, type: any, newProps:any){
+  const oldProps = current.memoizedProps
+  const instance = workInProgress.stateNode
+  const updatePayload = prepareUpdate(instance, type, oldProps, newProps)
+  workInProgress.updateQueue = updatePayload
+  if(updatePayload) {
+    markUpdate(workInProgress)
+  }
+}
+
 /**
  * 完成一个fiber 节点
  * @param current 老 fiber
@@ -50,11 +65,20 @@ function completeWork(current: any, workInProgress: any) {
       break
     case HostComponent:
       const { type } = workInProgress
-      const instance = createInstance(type, newProps, workInProgress)
-      // 把自己所有的儿子都添加到自己的身上
-      workInProgress.stateNode = instance
-      appendAllChildren(instance, workInProgress)
-      finalizeInitialChildren(instance, type, newProps)
+      // 如果老 fiber 存在，并且老fiber 上有 真实 dom，走更新逻辑
+      if(current !== null && workInProgress.stateNode !== null) {
+        updateHostComponent(current, workInProgress, type, newProps)
+      }else {
+        const instance = createInstance(type, newProps, workInProgress)
+        // 把自己所有的儿子都添加到自己的身上
+        workInProgress.stateNode = instance
+        appendAllChildren(instance, workInProgress)
+        finalizeInitialChildren(instance, type, newProps)
+      }
+
+      bubbleProperties(workInProgress)
+      break
+    case FunctionComponent:
       bubbleProperties(workInProgress)
       break
     case HostText:

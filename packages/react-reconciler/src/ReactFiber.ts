@@ -52,7 +52,7 @@ export function createHostRootFiber() {
 export function createWorkInProgress(current: any, pendingProps: any) {
   let workInProgress = current.alternate
   if (workInProgress === null) {
-    workInProgress = createFiber(current.tag, pendingProps, current.Key)
+    workInProgress = createFiber(current.tag, pendingProps, current.key)
     workInProgress.type = current.type
     workInProgress.stateNode = current.stateNode
     workInProgress.alternate = current
