@@ -11,14 +11,39 @@ let workInProgressHook:any = null
 let currentHook:any = null
 
 const HooksDispatcherOnMount = {
-  useReducer: mountReducer
+  useReducer: mountReducer,
+  useState: mountState
 }
 
 const HooksDispatcherOnUpdate = {
-  useReducer: updateReducer
+  useReducer: updateReducer,
+  useState: updateState
 }
 
-function updateReducer(reducer: any){
+function baseStateReducer(state:any, action:any) {
+  return typeof action === 'function' ? action(state) : action
+}
+
+function mountState(initialState: any){
+  const hook = mountWorkInProgressHook()
+  hook.memoizedState = initialState
+  const queue:any = {
+    pending: null,
+    dispatch: null,
+    lastRenderedReducer: baseStateReducer, // 上一个 reducer
+    lastRenderedState: initialState // 上一个 state
+  }
+  hook.queue = queue
+
+  const dispatch = (queue.dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue))
+  return [hook.memoizedState, dispatch]
+}
+
+function updateState(initialState: any){
+  return updateReducer(baseStateReducer, initialState)
+}
+
+function updateReducer(reducer: any, initialArg:any){
   const hook = updateWorkInProgress()
   const queue = hook.queue
   const current = currentHook
@@ -68,6 +93,24 @@ function dispatchReducerAction(fiber:any, queue:any, action:any){
   const root = enqueueConcurrentHookUpdate(fiber, queue, update)
   scheduleUpdateOnFiber(root)
   // console.log(fiber, queue, action)
+}
+
+function dispatchSetState(fiber: any, queue: any, action:any) {
+  const update:any = {
+    action,
+    hasEagerState: false, // 是否有急切的更新
+    eagerState: null, // 急切的更新状态
+    next: null
+  }
+  const { lastRenderedReducer, lastRenderedState } = queue
+  const eagerState = lastRenderedReducer(lastRenderedState, action)
+  update.hasEagerState = true
+  update.eagerState = eagerState
+  if(Object.is(eagerState, lastRenderedState)) {
+    return
+  }
+  const root = enqueueConcurrentHookUpdate(fiber, queue, update)
+  scheduleUpdateOnFiber(root)
 }
 
 function updateWorkInProgress(){
