@@ -29,6 +29,7 @@ export class FiberNode {
   // 轮替
   alternate: any = null
   index: number = 0
+  deletions = null // 存放将要删除的子 fiber
   constructor(tag: any, pendingProps: Props, key: Key) {
     this.tag = tag
     this.key = key
