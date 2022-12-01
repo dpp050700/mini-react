@@ -126,6 +126,10 @@ function insertOrAppendPlacementNode(node: any, before: any, parent: any) {
   }
 }
 
+/**
+ * 查找自己的弟弟
+ * @param fiber
+ */
 function getHostSibling(fiber: any): any {
   let node = fiber
   siblings: while (true) {

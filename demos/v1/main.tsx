@@ -20,11 +20,11 @@ function App() {
   ) :  (
     <ul onClick={() => setNumber(number + 1)}>
       <li key='A' id='A'>A</li>
-      <li key='C' id='C'>C</li>
-      <li key='E' id='E'>E</li>
-      <li key='B' id='B'>B</li>
-      <li key='G' id='G'>G</li>
-      <li key='D' id='D'>D</li>
+      <li key='C' id='C'>C2</li>
+      <li key='E' id='E'>E2</li>
+      <li key='B' id='B'>B2</li>
+      <li key='G' id='G'>G2</li>
+      <li key='D' id='D'>D2</li>
     </ul>
   )
 
