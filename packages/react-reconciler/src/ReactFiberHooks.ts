@@ -1,6 +1,8 @@
 import ReactSharedInternals from 'shared/ReactSharedInternals'
 import {scheduleUpdateOnFiber} from "./ReactFiberWorkLoop";
 import {enqueueConcurrentHookUpdate} from './ReactFiberConcurrentUpdates'
+import {Passive as PassiveEffect} from './ReactFiberFlags'
+import { HasEffect as HookHasEffect, Passive as HookPassive} from './ReactHookEffectTags'
 
 const { ReactCurrentDispatcher } = ReactSharedInternals
 
@@ -12,12 +14,14 @@ let currentHook:any = null
 
 const HooksDispatcherOnMount = {
   useReducer: mountReducer,
-  useState: mountState
+  useState: mountState,
+  useEffect: mountEffect
 }
 
 const HooksDispatcherOnUpdate = {
   useReducer: updateReducer,
-  useState: updateState
+  useState: updateState,
+  useEffect: updateEffect
 }
 
 function baseStateReducer(state:any, action:any) {
@@ -78,6 +82,53 @@ function mountReducer(reducer: any, initialArg: any){
   const dispatch = (queue.dispatch = dispatchReducerAction.bind(null, currentlyRenderingFiber, queue))
   return [hook.memoizedState, dispatch]
 }
+
+function mountEffect(create: any, deps: []) {
+  return mountEffectImpl(PassiveEffect, HookPassive, create, deps)
+}
+
+function mountEffectImpl(fiberFlags: any, hookFlags: any, create: any, deps: any){
+  const hook = mountWorkInProgressHook()
+  const nextDeps = deps === undefined ? null : deps
+  // 给当前的函数组件fiber 添加 flags
+  currentlyRenderingFiber.flags = fiberFlags
+  hook.memoizedState = pushEffect(HookHasEffect | hookFlags, create, undefined, nextDeps)
+}
+
+function pushEffect(tag: any, create: any, destroy: any, deps: any) {
+  const effect:any = {
+    tag,
+    create,
+    destroy,
+    deps,
+    next: null
+  }
+  let componentUpdateQueue = currentlyRenderingFiber.updateQueue
+  if(componentUpdateQueue === null) {
+    componentUpdateQueue = createFunctionComponentUpdateQueue()
+    currentlyRenderingFiber.updateQueue = componentUpdateQueue
+    componentUpdateQueue.lastEffect = effect.next = effect
+  }else {
+    const lastEffect = componentUpdateQueue.lastEffect
+    if(lastEffect === null) {
+      componentUpdateQueue.lastEffect = effect.next = effect
+    }else {
+      const firstEffect = lastEffect.next
+      lastEffect.next = effect
+      effect.next = firstEffect
+      componentUpdateQueue.lastEffect = effect
+    }
+  }
+  return effect
+}
+
+function createFunctionComponentUpdateQueue(): any{
+  return {
+    lastEffect: null
+  }
+}
+
+function updateEffect(create: any, deps: []){}
 
 /**
  * 执行派发动作， 更新状态、并且页面更新
