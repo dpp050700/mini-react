@@ -20,7 +20,7 @@ export class FiberNode {
   // 每个 fiber 会有自己的状态，每一种 fiber 存的类型是不一样的
   // 类组件对应的fiber 存的就是类实例的状态， hostRoot 存的就是要渲染的元素
   memoizedState: any = null
-  updateQueue: any = [] // 每个 fiber 身上可能还有更新队列
+  updateQueue: any = null // 每个 fiber 身上可能还有更新队列
   // 副作用的标识，表示要针对此 fiber 节点进行何种操作
   flags: Flags = NoFlags
   // 子节点对应的副作用标识
@@ -29,7 +29,7 @@ export class FiberNode {
   // 轮替
   alternate: any = null
   index: number = 0
-  deletions = null // 存放将要删除的子 fiber
+  deletions: any = null // 存放将要删除的子 fiber
   constructor(tag: any, pendingProps: Props, key: Key) {
     this.tag = tag
     this.key = key
