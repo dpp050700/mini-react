@@ -1,10 +1,11 @@
-import {MutationMask, Placement, Update} from './ReactFiberFlags'
+import { MutationMask, Passive, Placement, Update } from './ReactFiberFlags'
 import { HostRoot, HostComponent, HostText, FunctionComponent } from './ReactWorkTags'
 import { appendChild, insertBefore, commitUpdate, removeChild } from 'react-dom-bindings/src/client/ReactDOMHostConfig'
+import { HasEffect as HookHasEffect, Passive as HookPassive } from './ReactHookEffectTags'
 
-let hostParent = null
+let hostParent: any = null
 
-function commitDeletionEffects(root: any, returnFiber: any, deletedFiber: any){
+function commitDeletionEffects(root: any, returnFiber: any, deletedFiber: any) {
   let parent = returnFiber
   // 一直向上查找，找到真实 dom 节点
   findParent: while (parent !== null) {
@@ -20,7 +21,7 @@ function commitDeletionEffects(root: any, returnFiber: any, deletedFiber: any){
     }
     parent = parent.return
   }
-  commitDeletionEffectsOnFiber(root,returnFiber, deletedFiber)
+  commitDeletionEffectsOnFiber(root, returnFiber, deletedFiber)
   hostParent = null
 }
 
@@ -30,15 +31,15 @@ function commitDeletionEffects(root: any, returnFiber: any, deletedFiber: any){
  * @param nearestMountedAncestor 最近的挂载的祖先
  * @param deletedFiber
  */
-function commitDeletionEffectsOnFiber(finishedRoot: any,nearestMountedAncestor: any, deletedFiber: any){
+function commitDeletionEffectsOnFiber(finishedRoot: any, nearestMountedAncestor: any, deletedFiber: any) {
   switch (deletedFiber.tag) {
     case HostComponent:
     case HostText: {
       // 当要删除一个节点的时候，要先删除他的子节点
       // TODO Why？ 自己删掉了，子节点不也就删掉了？？？
       // 不直接删除自己，是因为还需要处理其他事情！ 类似：生命周期函数执行
-      recursivelyTraverseDeletionEffects(finishedRoot,nearestMountedAncestor, deletedFiber)
-      if(hostParent !== null) {
+      recursivelyTraverseDeletionEffects(finishedRoot, nearestMountedAncestor, deletedFiber)
+      if (hostParent !== null) {
         removeChild(hostParent, deletedFiber.stateNode)
       }
       break
@@ -48,7 +49,7 @@ function commitDeletionEffectsOnFiber(finishedRoot: any,nearestMountedAncestor: 
   }
 }
 
-function recursivelyTraverseDeletionEffects(finishedRoot: any,nearestMountedAncestor: any, parent: any){
+function recursivelyTraverseDeletionEffects(finishedRoot: any, nearestMountedAncestor: any, parent: any) {
   let child = parent.child
   while (child !== null) {
     commitDeletionEffects(finishedRoot, nearestMountedAncestor, child)
@@ -63,8 +64,8 @@ function recursivelyTraverseDeletionEffects(finishedRoot: any,nearestMountedAnce
  */
 function recursivelyTraverseMutationEffects(root: any, parentFiber: any) {
   const deletions = parentFiber.deletions
-  if(deletions !== null) {
-    for(let i = 0; i < deletions.length; i++) {
+  if (deletions !== null) {
+    for (let i = 0; i < deletions.length; i++) {
       const childToDelete = deletions[i]
       commitDeletionEffects(root, parentFiber, childToDelete)
     }
@@ -192,16 +193,16 @@ export function commitMutationEffectsOnFiber(finishedWork: any, root: any) {
       recursivelyTraverseMutationEffects(root, finishedWork)
       // 处理自己身上的副作用
       commitReconciliationEffects(finishedWork)
-      if(flags & Update) {
+      if (flags & Update) {
         const instance = finishedWork.stateNode
         // 更新真实dom
-        if(instance !== null) {
+        if (instance !== null) {
           const newProps = finishedWork.memoizedProps
           const oldProps = current !== null ? current.memoizedProps : newProps
           const type = finishedWork.type
           const updatePayload = finishedWork.updateQueue
           finishedWork.updateQueue = null
-          if(updatePayload) {
+          if (updatePayload) {
             commitUpdate(instance, updatePayload, type, oldProps, newProps, finishedWork)
           }
         }
@@ -209,6 +210,109 @@ export function commitMutationEffectsOnFiber(finishedWork: any, root: any) {
 
     default:
       break
+  }
+}
+
+export function commitPassiveUnmountEffects(finishedWork: any) {
+  commitPassiveUnmountOnFiber(finishedWork)
+}
+export function commitPassiveMountEffects(root: any, finishedWork: any) {
+  commitPassiveMountOnFiber(root, finishedWork)
+}
+
+function commitPassiveUnmountOnFiber(finishedWork: any) {
+  const flags = finishedWork.flags
+  switch (finishedWork.tag) {
+    case HostRoot: {
+      recursivelyTraversePassiveUnMountEffects(finishedWork)
+      break
+    }
+    case FunctionComponent: {
+      recursivelyTraversePassiveUnMountEffects(finishedWork)
+      if (flags & Passive) {
+        commitHookPassiveUnMountEffects(finishedWork, HookHasEffect | HookPassive)
+      }
+      break
+    }
+  }
+}
+
+function recursivelyTraversePassiveUnMountEffects(parentFiber: any) {
+  if (parentFiber.subtreeFlags & Passive) {
+    let child = parentFiber.child
+    while (child !== null) {
+      commitPassiveUnmountOnFiber(child)
+      child = child.sibling
+    }
+  }
+}
+
+function commitHookPassiveUnMountEffects(finishedWork: any, hookFlags: any) {
+  commitHookEffectListUnMount(hookFlags, finishedWork)
+}
+
+function commitHookEffectListUnMount(flags: any, finishedWork: any) {
+  const updateQueue = finishedWork.updateQueue
+  const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null
+  if (lastEffect !== null) {
+    const firstEffect = lastEffect.next
+    let effect = firstEffect
+    do {
+      if ((effect.tag & flags) === flags) {
+        const destroy = effect.destroy
+        if (destroy !== undefined) {
+          destroy()
+        }
+      }
+      effect = effect.next
+    } while (effect !== firstEffect)
+  }
+}
+
+function commitPassiveMountOnFiber(finishedRoot: any, finishedWork: any) {
+  const flags = finishedWork.flags
+  switch (finishedWork.tag) {
+    case HostRoot: {
+      recursivelyTraversePassiveMountEffects(finishedRoot, finishedWork)
+      break
+    }
+    case FunctionComponent: {
+      recursivelyTraversePassiveMountEffects(finishedRoot, finishedWork)
+      if (flags & Passive) {
+        commitHookPassiveMountEffects(finishedWork, HookPassive | HookHasEffect)
+      }
+      break
+    }
+  }
+}
+
+function recursivelyTraversePassiveMountEffects(root: any, parentFiber: any) {
+  if (parentFiber.subtreeFlags & Passive) {
+    let child = parentFiber.child
+    while (child !== null) {
+      commitPassiveMountOnFiber(root, child)
+      child = child.sibling
+    }
+  }
+}
+
+function commitHookPassiveMountEffects(finishedWork: any, hookFlags: any) {
+  commitHookEffectListMount(hookFlags, finishedWork)
+}
+
+function commitHookEffectListMount(flags: any, finishedWork: any) {
+  const updateQueue = finishedWork.updateQueue
+  const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null
+  if (lastEffect !== null) {
+    const firstEffect = lastEffect.next
+    let effect = firstEffect
+    do {
+      if ((effect.tag & flags) === flags) {
+        const create = effect.create
+        effect.destroy = create()
+      }
+      effect = effect.next
+    } while (effect !== firstEffect)
   }
 }
 
