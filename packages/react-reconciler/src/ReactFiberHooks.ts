@@ -128,7 +128,7 @@ function createFunctionComponentUpdateQueue(): any {
   }
 }
 
-function updateEffect(create: any, deps: []) {
+function updateEffect(create: any, deps: any) {
   return updateEffectImpl(PassiveEffect, HookPassive, create, deps)
 }
 

@@ -53,6 +53,7 @@ function flushPassiveEffect() {
 }
 
 function commitRoot(root: any) {
+  // debugger
   // 新构建的根 fiber
   const { finishedWork } = root
   if ((finishedWork.subtreeFlags & Passive) !== NoFlags || (finishedWork.flags & Passive) !== NoFlags) {

@@ -104,6 +104,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean): any {
           return null
       }
     }
+    return null
   }
 
   function mapRemainingChildren(returnFiber: any, currentFirstChild: any) {

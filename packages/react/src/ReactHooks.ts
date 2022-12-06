@@ -1,10 +1,10 @@
 import ReactCurrentDispatcher from './ReactCurrentDispatcher'
 
-function resolveDispatcher(){
+function resolveDispatcher() {
   return ReactCurrentDispatcher.current
 }
 
-export function useReducer(reducer:any, initialArg:any) {
+export function useReducer(reducer: any, initialArg: any) {
   const dispatcher = resolveDispatcher()
   return dispatcher.useReducer(reducer, initialArg)
 }
@@ -14,7 +14,7 @@ export function useState(initialState: any) {
   return dispatcher.useState(initialState)
 }
 
-export function useEffect(create: any){
+export function useEffect(create: any, deps: any) {
   const dispatcher = resolveDispatcher()
-  return dispatcher.useEffect(create)
+  return dispatcher.useEffect(create, deps)
 }

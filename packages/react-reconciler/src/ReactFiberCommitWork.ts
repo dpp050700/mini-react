@@ -44,6 +44,8 @@ function commitDeletionEffectsOnFiber(finishedRoot: any, nearestMountedAncestor:
       }
       break
     }
+    case FunctionComponent:
+      recursivelyTraverseDeletionEffects(finishedRoot, nearestMountedAncestor, deletedFiber)
     default:
       break
   }
@@ -234,6 +236,8 @@ function commitPassiveUnmountOnFiber(finishedWork: any) {
       }
       break
     }
+    default:
+      recursivelyTraversePassiveUnMountEffects(finishedWork)
   }
 }
 
@@ -283,6 +287,8 @@ function commitPassiveMountOnFiber(finishedRoot: any, finishedWork: any) {
       }
       break
     }
+    default:
+      recursivelyTraversePassiveMountEffects(finishedRoot, finishedWork)
   }
 }
 
