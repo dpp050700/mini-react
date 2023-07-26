@@ -1,3 +1,7 @@
+/**
+ * entry
+ */
+
 import { jsx } from './src/jsx/ReactJSXElement'
 
 export const createElement = jsx
